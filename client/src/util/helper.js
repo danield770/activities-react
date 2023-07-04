@@ -2,14 +2,6 @@ import { activityConfig } from '../config/activities';
 
 export function formatDate(number, isLongMonth = true) {
   const d = new Date(0);
-  //   const options = {
-  //     year: 'numeric',
-  //     month: isLongMonth ? 'long' : 'short',
-  //     day: 'numeric',
-  //     hour: 'numeric',
-  //     minute: 'numeric',
-  //   };
-
   const dateOptions = {
     year: 'numeric',
     month: isLongMonth ? 'long' : 'short',
@@ -19,11 +11,9 @@ export function formatDate(number, isLongMonth = true) {
 
   d.setUTCSeconds(number);
 
-  return `${d.toLocaleDateString(
-    'en-US',
-    dateOptions
-  )} · ${d.toLocaleTimeString('en-US', timeOptions)}`;
-  //   return d.toLocaleDateString('en-US', options).replace('at', '·');
+  return `${d.toLocaleDateString('en-US', dateOptions)} · ${d
+    .toLocaleTimeString('en-US', timeOptions)
+    .toLowerCase()}`;
 }
 
 function sortByKey(arr, key, isDesc = false) {
@@ -41,14 +31,6 @@ export function extractMonth(dateNumber) {
   const formattedDate = formatDate(dateNumber);
   return formattedDate.split(' ')[0];
 }
-// export function extractShortMonth(dateNumber) {
-//   const date = new Date(0);
-
-//   date.setUTCSeconds(dateNumber);
-//   const formatter = new Intl.DateTimeFormat('en-US', { month: 'short' });
-
-//   return formatter.format(date);
-// }
 
 export function sortByMonth(arr) {
   const latestActivities = sortByKey(arr, 'd_created', true);

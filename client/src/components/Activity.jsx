@@ -45,7 +45,9 @@ function Activity() {
       searchFilter === ''
         ? filteredData
         : filteredData.filter((activity) =>
-            activity.displayName.includes(searchFilter)
+            activity.displayName
+              .toLowerCase()
+              .includes(searchFilter.toLowerCase())
           );
 
     return searchFilteredData.length ? sortByMonth(searchFilteredData) : [];

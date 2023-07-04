@@ -27,14 +27,18 @@ function Search({ activityNames, filterByActivityName }) {
     if (!showSuggestions) return false;
 
     // eslint-disable-next-line react/prop-types
-    return activityNames.every((name) => !name.includes(searchText));
+    return activityNames.every(
+      (name) => !name.toLowerCase().includes(searchText.toLowerCase())
+    );
   }, [searchText]);
 
   const searchResults = React.useMemo(() => {
     if (!showSuggestions) return [];
 
     // eslint-disable-next-line react/prop-types
-    return activityNames.filter((name) => name.includes(searchText));
+    return activityNames.filter((name) =>
+      name.toLowerCase().includes(searchText.toLowerCase())
+    );
   }, [searchText, showSuggestions]);
 
   console.log({ searchResults });
