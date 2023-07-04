@@ -1,6 +1,7 @@
 import React from 'react';
 import { IoSearch } from 'react-icons/io5';
 import { IoIosClose } from 'react-icons/io';
+import VisuallyHidden from './VisuallyHidden';
 
 // eslint-disable-next-line react/prop-types
 function Search({ activityNames, filterByActivityName }) {
@@ -53,6 +54,7 @@ function Search({ activityNames, filterByActivityName }) {
         {searchText && (
           <button type='button' className='reset-btn' onClick={resetSearch}>
             <IoIosClose size='28' />
+            <VisuallyHidden>Reset Search</VisuallyHidden>
           </button>
         )}
         <button
@@ -62,6 +64,7 @@ function Search({ activityNames, filterByActivityName }) {
           disabled={!searchText || hasNoResults}
         >
           <IoSearch size='28' />
+          <VisuallyHidden>Search Activities</VisuallyHidden>
         </button>
       </div>
       {hasNoResults ? (

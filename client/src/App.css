@@ -79,7 +79,6 @@ ol:last-child .activity-item:last-child::after {
   align-self: start;
 }
 .details {
-  /* margin-left: 30px; */
   color: #008081;
 }
 .score {
@@ -100,8 +99,6 @@ ol:last-child .activity-item:last-child::after {
   display: flex;
 }
 .filter input {
-  /* display: none; */
-  /* visibility: hidden; */
   width: 0;
   height: 0;
 }
@@ -134,7 +131,6 @@ input:focus-visible + label {
   position: relative;
 }
 .search-input {
-  /* width: 515px; */
   flex: 1;
   border: 1px solid #cbcccd;
   border-right: 0;
@@ -192,4 +188,65 @@ input:focus-visible + label {
   color: red;
   position: relative;
   top: -20px;
+}
+.modal-wrapper {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-content: center;
+}
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  /* background: hsl(0deg 0% 0% / 0.5); // uncomment to set a backdrop */
+}
+.dialog {
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  height: 300px;
+  aspect-ratio: 1.75;
+  border: 2px solid #a9aaab;
+}
+.modal-close {
+  color: #a9aaab;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+.modal-content {
+  text-align: center;
+  height: 100%;
+}
+.dialog .activity-img {
+  width: 52px;
+  height: 52px;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+.dialog .activity-name {
+  font-size: 1.8rem;
+  font-weight: 500;
+  margin: 10px 0;
+}
+.dialog .junior-tag {
+  width: 20px;
+  height: 20px;
+  font-size: 0.8rem;
+}
+.dialog .activity-date {
+  font-size: 1rem;
+}
+.dialog .comment {
+  text-align: left;
+  margin-top: 20px;
+  font-size: 1.2rem;
+}
+.dialog .score {
+  position: absolute;
+  left: 24px;
+  bottom: 18px;
+  color: #008081;
 }
