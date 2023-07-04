@@ -1,16 +1,23 @@
 import React from 'react';
-import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useData } from '../hooks/useData';
 import { sortByMonth, prepareData, removeDuplicates } from '../util/helper';
 import { activityConfig } from '../config/activities';
 import MonthlyActivities from './MonthlyActivities';
 import Filters from './Filters';
 import Search from './Search';
 
-function Activity() {
+// eslint-disable-next-line react/prop-types
+function Activity({ api }) {
   const [filter, setFilter] = React.useState('all');
   const [searchFilter, setSearchFilter] = React.useState('');
-  const activities_V1_Endpoint = '/activities/v1';
+  const activitiesEndpoint =
+    api === 'v1'
+      ? '/activities/v1'
+      : api === 'v2'
+      ? '/activities/v2'
+      : 'no-url';
+  const queryKey =
+    api === 'v1' ? 'activities' : api === 'v2' ? 'activitiesV2' : 'error';
 
   function changeFilter(filter) {
     setFilter(filter);
@@ -19,27 +26,27 @@ function Activity() {
     setSearchFilter(searchText);
   }
 
-  const { data, isLoading } = useQuery({
-    queryFn: async () => {
-      const { data } = await axios.get(activities_V1_Endpoint);
-      console.log({ data });
-      const dataWithDisplayName = prepareData(data);
+  const { data, isLoading } = useData(activitiesEndpoint, queryKey);
+  const dataWithDisplayName = React.useMemo(() => {
+    if (!data) return [];
 
-      return dataWithDisplayName;
-    },
-    queryKey: ['activities'],
-  });
+    return prepareData(data);
+  }, [data]);
+
+  // console.log({ dataWithDisplayName });
 
   const sortedData = React.useMemo(() => {
-    if (!data) return [];
+    if (!dataWithDisplayName.length) return [];
     // console.log({ filter });
     // console.log({ searchFilter });
     // console.log({ data });
 
     const filteredData =
       filter === 'all'
-        ? data
-        : data.filter((activity) => activity.resource_type === filter);
+        ? dataWithDisplayName
+        : dataWithDisplayName.filter(
+            (activity) => activity.resource_type === filter
+          );
 
     const searchFilteredData =
       searchFilter === ''
@@ -51,18 +58,18 @@ function Activity() {
           );
 
     return searchFilteredData.length ? sortByMonth(searchFilteredData) : [];
-  }, [data, filter, searchFilter]);
+  }, [dataWithDisplayName, filter, searchFilter]);
 
   // console.log({ sortedData });
 
   const activityNames = React.useMemo(() => {
-    if (!data) return [];
+    if (!dataWithDisplayName.length) return [];
 
     // in this data there are no dupes, but in general there probably would be
     return removeDuplicates(
-      data.map((activity) => activity.displayName)
+      dataWithDisplayName.map((activity) => activity.displayName)
     ).sort();
-  }, [data]);
+  }, [dataWithDisplayName]);
 
   // console.log({ activityNames });
 

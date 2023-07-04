@@ -1,27 +1,34 @@
+import React from 'react';
 import { useParams } from 'react-router-dom';
 import Activity from './Activity';
-import axios from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useData } from '../hooks/useData';
 import { prepareData, formatDate, resourseNameFromPath } from '../util/helper';
 import Modal from './Modal';
 import { imgMap, imgBgs } from './Images';
 import { activityConfig } from '../config/activities';
 
-function ActivityZoom() {
+// eslint-disable-next-line react/prop-types
+function ActivityZoom({ api }) {
   const { key } = useParams();
-  const activities_V1_Endpoint = '/activities/v1';
 
-  const { data } = useQuery({
-    queryFn: async () => {
-      const { data } = await axios.get(activities_V1_Endpoint);
-      console.log({ data });
-      const dataWithDisplayName = prepareData(data);
+  const activitiesEndpoint =
+    api === 'v1'
+      ? '/activities/v1'
+      : api === 'v2'
+      ? '/activities/v2'
+      : 'no-url';
+  const queryKey =
+    api === 'v1' ? 'activities' : api === 'v2' ? 'activitiesV2' : 'error';
 
-      return dataWithDisplayName;
-    },
-    queryKey: ['activities'],
-  });
-  if (!key || !data) return null;
+  const { data } = useData(activitiesEndpoint, queryKey);
+  const dataWithDisplayName = React.useMemo(() => {
+    if (!data) return [];
+
+    return prepareData(data);
+  }, [data]);
+
+  if (!key || !dataWithDisplayName) return null;
+
   const {
     resource_type,
     score,
@@ -31,13 +38,11 @@ function ActivityZoom() {
     d_created,
     displayName,
     comment,
-  } = data.filter((activity) => activity.id === key)[0];
-
-  //   console.log({ modalData });
+  } = dataWithDisplayName.filter((activity) => activity.id === key)[0];
 
   return (
     <>
-      <Activity />
+      <Activity api={api} />
       <Modal title={displayName}>
         <div className='modal-content'>
           <div

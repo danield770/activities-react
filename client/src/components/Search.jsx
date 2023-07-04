@@ -8,9 +8,8 @@ function Search({ activityNames, filterByActivityName }) {
   const [searchText, setSearchText] = React.useState('');
   const [showSuggestions, setShowSuggestions] = React.useState(false);
 
-  //   function hadleInputChange(e) {
-  //     setSearchText(e.target.value);
-  // }
+  //   console.log({ activityNames });
+
   function resetSearch() {
     filterByActivityName('');
     setSearchText('');
