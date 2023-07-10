@@ -11,12 +11,12 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
-        // rewrite: (path) => path.replace(/^\/#/, ''),
       },
-      // '^/activities/.*': {
+      // '/v2': {
       //   target: 'http://localhost:3000',
       //   changeOrigin: true,
-      //   rewrite: (path) => path.replace(/^\/activities/, ''),
+      //   secure: false,
+      //   rewrite: (path) => path.replace(/^\/v2/, ''),
       // },
     },
   },

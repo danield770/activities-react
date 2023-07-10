@@ -80,9 +80,8 @@ ol:last-child .activity-item:last-child::after {
 }
 .details {
   color: #008081;
-}
-.score {
-  margin-right: 30px;
+  display: flex;
+  gap: 30px;
 }
 .filters {
   display: flex;
@@ -249,4 +248,16 @@ input:focus-visible + label {
   left: 24px;
   bottom: 18px;
   color: #008081;
+}
+.load-more {
+  color: #008081;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.chevron-down {
+  display: inline-block;
+  vertical-align: top;
 }

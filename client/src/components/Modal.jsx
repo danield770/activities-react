@@ -3,7 +3,8 @@ import { CgCloseO } from 'react-icons/cg';
 import VisuallyHidden from './VisuallyHidden';
 import { Link } from 'react-router-dom';
 
-function Modal({ title, children }) {
+function Modal({ title, version, children }) {
+  const url = version === 2 ? '/v2' : '/';
   return createPortal(
     <div className='modal-wrapper'>
       <div className='modal-backdrop' />
@@ -13,7 +14,7 @@ function Modal({ title, children }) {
         aria-modal='true'
         aria-label={title}
       >
-        <Link to={`/`} className='modal-close'>
+        <Link to={url} className='modal-close'>
           <CgCloseO size='28' />
           <VisuallyHidden>
             Close modal and return to activities page

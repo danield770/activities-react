@@ -1,12 +1,12 @@
-import { extractMonth, formatDate, resourseNameFromPath } from '../util/helper';
+import { extractMonth, formatDate, resourceNameFromPath } from '../util/helper';
 import { imgMap, imgBgs } from './Images';
-import { ImEye } from 'react-icons/im';
+import { ImEye, ImEyeBlocked } from 'react-icons/im';
 import { activityConfig } from '../config/activities';
 import { Link } from 'react-router-dom';
 
 // eslint-disable-next-line react/prop-types
-function MonthlyActivities({ monthData }) {
-  // console.log({ monthData });
+function MonthlyActivities({ monthData, endPoint, hideActivity }) {
+  console.log({ monthData });
   return (
     <>
       {/* eslint-disable-next-line react/prop-types */}
@@ -23,6 +23,7 @@ function MonthlyActivities({ monthData }) {
             topic_data,
             d_created,
             displayName,
+            comment,
           }) => (
             <li
               key={id}
@@ -33,12 +34,12 @@ function MonthlyActivities({ monthData }) {
                   className='activity-img'
                   style={{
                     backgroundColor:
-                      imgBgs[resourseNameFromPath(topic_data.icon_path)],
+                      imgBgs[resourceNameFromPath(topic_data.icon_path)],
                   }}
                 >
                   <img
                     alt='activity image'
-                    src={imgMap[resourseNameFromPath(topic_data.icon_path)]}
+                    src={imgMap[resourceNameFromPath(topic_data.icon_path)]}
                   />
                   {product === 'bpjr' && <div className='junior-tag'>Jr.</div>}
                 </div>
@@ -51,6 +52,9 @@ function MonthlyActivities({ monthData }) {
                 </div>
               </div>
               <span className='details'>
+                <button className='font-bold' onClick={() => hideActivity(id)}>
+                  {<ImEyeBlocked size='20' className='icon-visual' />} Hide
+                </button>
                 {activityConfig[resource_type].score && (
                   <span className='score'>
                     Score{' '}
@@ -60,7 +64,21 @@ function MonthlyActivities({ monthData }) {
                   </span>
                 )}
                 {activityConfig[resource_type].zoom && (
-                  <Link to={`/activities/v1/${id}`}>
+                  <Link
+                    to={`${endPoint}/${id}`}
+                    state={{
+                      resource_type,
+                      score,
+                      possible_score,
+                      product,
+                      topic_data,
+                      d_created,
+                      displayName,
+                      comment,
+                      // eslint-disable-next-line react/prop-types
+                      version: endPoint.includes('v2') ? 2 : 1,
+                    }}
+                  >
                     <span className='font-bold'>
                       {<ImEye size='20' className='icon-visual' />} View work
                     </span>

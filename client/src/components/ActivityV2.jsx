@@ -1,7 +1,11 @@
 import React from 'react';
 import { useData } from '../hooks/useData';
 import { removeDuplicates, capSortedData } from '../util/helper';
-import { sortByMonth, prepareData } from '../util/helperV1';
+import {
+  sortByMonthV2,
+  prepareDataV2,
+  getDisplayNames,
+} from '../util/helperV2';
 import { activityConfig } from '../config/activities';
 import MonthlyActivities from './MonthlyActivities';
 import Filters from './Filters';
@@ -9,15 +13,15 @@ import Search from './Search';
 import { HiChevronDown } from 'react-icons/hi';
 
 // eslint-disable-next-line react/prop-types
-function Activity() {
+function ActivityV2() {
   const [filter, setFilter] = React.useState('all');
   const [searchFilter, setSearchFilter] = React.useState('');
   const [page, setPage] = React.useState(1);
   const [hiddenActivities, setHiddenActivities] = React.useState(() => {
     return JSON.parse(localStorage.getItem('hidden')) || [];
   });
-  const activitiesEndpoint = '/activities/v1';
-  const queryKey = 'activities';
+  const activitiesEndpoint = '/activities/v2';
+  const queryKey = 'activitiesV2';
 
   function hideActivity(id) {
     const updatedHidden = [...hiddenActivities, id];
@@ -36,20 +40,19 @@ function Activity() {
   const dataWithDisplayName = React.useMemo(() => {
     if (!data) return [];
 
-    // add displayName prop to activity items
-    return prepareData(data);
+    return prepareDataV2(data);
   }, [data]);
-
-  // console.log({ dataWithDisplayName });
 
   const sortedData = React.useMemo(() => {
     if (!dataWithDisplayName.length) return [];
-    // console.log({ filter });
-    // console.log({ searchFilter });
-    // console.log({ data });
-    const nonHiddenActivities = dataWithDisplayName.filter(
-      (activity) => !hiddenActivities.includes(activity.id)
-    );
+
+    const nonHiddenActivities = dataWithDisplayName.map((item) => ({
+      ...item,
+      activities: item.activities.filter(
+        (activity) => !hiddenActivities.includes(activity.id)
+      ),
+    }));
+
     const filteredData =
       filter === 'all'
         ? nonHiddenActivities
@@ -57,19 +60,32 @@ function Activity() {
             (activity) => activity.resource_type === filter
           );
 
+    console.log({ filteredData });
+
     const searchFilteredData =
       searchFilter === ''
         ? filteredData
-        : filteredData.filter((activity) =>
-            activity.displayName
-              .toLowerCase()
-              .includes(searchFilter.toLowerCase())
-          );
+        : filteredData.map((item) => {
+            return {
+              ...item,
+              activities: item.activities.filter((activity) =>
+                activity.displayName
+                  .toLowerCase()
+                  .includes(searchFilter.toLowerCase())
+              ),
+            };
+          });
 
-    return searchFilteredData.length ? sortByMonth(searchFilteredData) : [];
+    console.log({ searchFilteredData });
+
+    return searchFilteredData.some((item) => item.activities.length)
+      ? sortByMonthV2(
+          searchFilteredData.filter((item) => item.activities.length)
+        )
+      : [];
   }, [dataWithDisplayName, filter, searchFilter, hiddenActivities]);
 
-  // console.log({ sortedData });
+  console.log({ sortedData });
 
   const ITEMS_PER_PAGE = 10;
   const total_items = sortedData.length
@@ -85,12 +101,10 @@ function Activity() {
     if (!dataWithDisplayName.length) return [];
 
     // in this data there are no dupes, but in general there probably would be
-    return removeDuplicates(
-      dataWithDisplayName.map((activity) => activity.displayName)
-    ).sort();
+    return removeDuplicates(getDisplayNames(dataWithDisplayName)).sort();
   }, [dataWithDisplayName]);
 
-  // console.log({ activityNames });
+  console.log({ activityNames });
 
   if (isLoading) {
     return <div>Data is loading...</div>;
@@ -119,7 +133,7 @@ function Activity() {
           <MonthlyActivities
             key={index}
             monthData={monthData}
-            endPoint='/activities/v1'
+            endPoint='/activities/v2'
             hideActivity={hideActivity}
           />
         ))}
@@ -137,4 +151,4 @@ function Activity() {
   );
 }
 
-export default Activity;
+export default ActivityV2;

@@ -16,7 +16,7 @@ export function formatDate(number, isLongMonth = true) {
     .toLowerCase()}`;
 }
 
-function sortByKey(arr, key, isDesc = false) {
+export function sortByKey(arr, key, isDesc = false) {
   return arr.sort((a, b) => {
     const x = a[key];
     const y = b[key];
@@ -30,26 +30,6 @@ function sortByKey(arr, key, isDesc = false) {
 export function extractMonth(dateNumber) {
   const formattedDate = formatDate(dateNumber);
   return formattedDate.split(' ')[0];
-}
-
-export function sortByMonth(arr) {
-  const latestActivities = sortByKey(arr, 'd_created', true);
-  console.log({ latestActivities });
-  const activitiesByMonth = [];
-  let monthlyActivities = [];
-  let currentMonth = extractMonth(latestActivities[0].d_created);
-
-  for (const activity of latestActivities) {
-    if (extractMonth(activity.d_created) === currentMonth) {
-      monthlyActivities.push(activity);
-    } else {
-      currentMonth = extractMonth(activity.d_created);
-      activitiesByMonth.push(monthlyActivities);
-      monthlyActivities = [activity];
-    }
-  }
-  activitiesByMonth.push(monthlyActivities);
-  return activitiesByMonth;
 }
 
 function capitalize(string) {
@@ -66,7 +46,7 @@ export function capitalizeAll(string) {
   return newWords.join(' ');
 }
 
-export function resourseNameFromPath(path) {
+export function resourceNameFromPath(path) {
   //'/assets/topics/camouflage.png';
   return path.split('/').at(-1).slice(0, -4);
 }
@@ -78,10 +58,20 @@ export function removeDuplicates(arr) {
 export function buildActivityName(topicDataName, resourceType) {
   return `${capitalizeAll(topicDataName)} ${activityConfig[resourceType].name}`;
 }
-
-export function prepareData(data) {
-  return data.map((item) => ({
-    ...item,
-    displayName: buildActivityName(item.topic_data.name, item.resource_type),
-  }));
+export function capSortedData(data, cap) {
+  let cappedData = [];
+  let currentActivities = 0;
+  for (const month of data) {
+    if (currentActivities > cap) {
+      return cappedData;
+    }
+    if (currentActivities + month.length < cap) {
+      currentActivities += month.length;
+      cappedData = [...cappedData, month];
+    } else {
+      cappedData = [...cappedData, month.slice(0, cap - currentActivities)];
+      currentActivities += month.length;
+    }
+  }
+  return cappedData;
 }
